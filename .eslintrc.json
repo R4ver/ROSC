@@ -6,12 +6,9 @@
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "airbnb",
-        "plugin:prettier/recommended",
-        "prettier"
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -19,46 +16,44 @@
         "ecmaVersion": 12,
         "sourceType": "module"
     },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
     "plugins": [
-        "react",
-        "@typescript-eslint",
-        "prettier"
+        "react"
     ],
     "rules": {
-        // Prettier
-        "prettier/prettier": "error",
-        // Typescript
-        "no-use-before-define": "off",
-        "import/prefer-default-export": "warn",
-        "@typescript-eslint/no-use-before-define": ["error"],
-        "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/no-explicit-any": "warn",
-        "@typescript-eslint/no-var-requires": "warn",
-        // react
-        "react/require-default-props": 0,
-        "react/button-has-type": 0,
-        "react/no-children-prop": 0,
-        "react/jsx-props-no-spreading": 0,
-        "react/function-component-definition": ["warn", {
-            "namedComponents": "function-declaration",
-            "unnamedComponents": "function-expression"
-        }],
-        "react/jsx-filename-extension": [
-            2,
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ],
+        "space-in-parens": [
+            "error",
+            "always",
             {
-                "extensions": [".js",".jsx",".ts",".tsx"]
+                "exceptions": [
+                    "empty"
+                ]
             }
         ],
-        // Import
-        "import/extensions": 0
-    },
-    "settings": {
-        "import/resolver": {
-          "node": {
-            "extensions": [".js", ".jsx", ".ts", ".tsx"]
-          }
-        },
-        "import/core-modules": [ "electron", "electron-is-dev" ]
-    },
-    "ignorePatterns": ["node_modules/", "dist/", "main/"]
+        "@typescript-eslint/no-explicit-any": "off"
+    }
 }

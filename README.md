@@ -1,37 +1,17 @@
-# Vite + React + Typescript + Electron - Starter
+# ROSC
+A bundle of cool things for VRChat to enhance the creativity of and possibilities of avatars.
 
-![Vite + React + Typescript + Tailwind + Electron Starter](Screenshot.jpg)
+Very much in an early stage.
 
-> It is a simple starter tempalte without unnecessary packages.
+# Personal Audio Link
+The AudioLink shader for avatars is an amazing thing which really enhance the visuals of an avatar when clubbing in VRChat or experiencing other worlds.
+This module provides a way for you to enhance your avatar and hook into your audio output (through something like VoiceMeeter) and create custom animations for your avatar controlled by the `float` parameters provided by the module.
 
-This very simple Starter template, utilizes [Vite](https://github.com/vitejs/vite), [Tailwind](https://tailwindcss.com/), [React](https://reactjs.org/), [Typescript](https://www.typescriptlang.org/) and [Electron](https://electronjs.org/).
+*Add demo*
 
-By default, the React framework is used for the interface, but you can easily use any other framework such as Vue, Preact, Angular, Svelte or anything else.
+# Thumb Parameters
+Mainly created for the Sign language commmunity to give the ability of extra animation triggers based on your thumb position on your controller (Quest 2 & Valve Index).
+This can ofc. be used to do whatever since it's just two `Int` parameters. Quest animation controller for avatars currently in the works.
+Heavily inspired by things created by the community <3
 
-> Vite is framework agnostic
-
-## Installation
-
-Clone this repo and install all dependencies  
-`yarn` or `npm install`
-
-## Development
-
-`yarn dev` or `npm run dev`
-
-## Build
-
-`yarn build` or `npm run build`
-
-## Publish
-
-`yarn dist` or `npm run dist`
-
-## More advanced templates  
-
-If you are looking for more advanced templates than this, please go to one of the following links (these are some other links out of the **[awesome-vite](https://github.com/vitejs/awesome-vite)** repo) or you can help me make this template better 🙂  
-
-Links: 
-- [vite-react-electron](https://github.com/caoxiemeihao/vite-react-electron)
-- [electron-vite-react](https://github.com/twstyled/electron-vite-react)
-- [vite-electron-esbuild-starter](https://github.com/jctaoo/vite-electron-esbuild-starter)
+*Add table of `Int` layout*
