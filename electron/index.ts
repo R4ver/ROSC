@@ -1,16 +1,24 @@
 // Native
 import { join } from "path";
+import { WebSocketServer } from "ws";
 
 // Packages
 import { BrowserWindow, app, ipcMain, IpcMainEvent } from "electron";
 import isDev from "electron-is-dev";
 
+// Handlers
+import MessageHandler from "./message-handler";
+import SpawnModule from "./module-spawner";
+import { WebSocketClient } from "vite";
+
 const height = 600;
 const width = 800;
 
+let window: BrowserWindow;
+
 function createWindow() {
     // Create the browser window.
-    const window = new BrowserWindow( {
+    window = new BrowserWindow( {
         width,
         height,
         //  change to false to use AppBar
@@ -80,3 +88,71 @@ ipcMain.on( "message", ( event: IpcMainEvent, message: any ) => {
     console.log( message );
     setTimeout( () => event.sender.send( "message", "hi from electron" ), 500 );
 } );
+
+/**
+ * Setup WebSocket server
+ */
+
+const wss = new WebSocketServer( { port: 8080 } );
+
+type TState = {
+    frontend: null | WebSocketClient,
+    modules: object,
+    isListening: boolean
+}
+
+let state: TState = {
+    frontend: null,
+    modules: {},
+    isListening: false
+};
+
+wss.on( "connection", ( ws ) => {
+    ws.on( "message", ( data: string ) => {
+        const message = FormatMessage( data );
+
+        MessageHandler( state, message, ws, ( newState: TState ) => {
+            state = {
+                ...newState
+            };
+
+            
+        } );
+    } );
+} );
+
+wss.on( "listening", () => {
+    console.log( "Server is listening!" );
+
+    state = {
+        ...state,
+        isListening: true
+    };
+
+    spawnActiveModules();
+} );
+
+const spawnActiveModules = () => {
+
+    SpawnModule( "thumbparameters", true );
+    
+    // SpawnModule( null, false, "../testclient.js" );
+};
+
+function isJsonString( str: string ) {
+    try {
+        JSON.parse( str );
+    } catch ( e ) {
+        return false;
+    }
+    return true;
+}
+
+function FormatMessage( message: string ) {
+    message = message.toString();
+    if ( isJsonString( message ) ) {
+        return JSON.parse( message );
+    }
+
+    return message;
+}
