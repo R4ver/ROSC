@@ -23,6 +23,8 @@ yarn-error.log*
 # Ignore audiolink module for now
 ./modules/audiolink
 
+# Ignore main folder for converted ESNext => ES2015
+
 # Logs
 logs
 *.log

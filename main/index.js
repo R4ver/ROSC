@@ -93,7 +93,6 @@ let state = {
 wss.on("connection", (ws) => {
     ws.on("message", (data) => {
         const message = FormatMessage(data);
-        console.log(message);
         (0, message_handler_1.default)(state, message, ws, (newState) => {
             state = {
                 ...newState
