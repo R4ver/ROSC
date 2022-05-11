@@ -3,6 +3,8 @@ A bundle of cool things for VRChat to enhance the creativity of and possibilitie
 
 Very much in an early stage.
 
+![ROSC AudioLink Showcase](./Screenshot.png)
+
 # Personal Audio Link
 The AudioLink shader for avatars is an amazing thing which really enhance the visuals of an avatar when clubbing in VRChat or experiencing other worlds.
 This module provides a way for you to enhance your avatar and hook into your audio output (through something like VoiceMeeter) and create custom animations for your avatar controlled by the `float` parameters provided by the module.
