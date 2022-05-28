@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AppBar from "./AppBar";
+import NavBar from "./NavBar";
 
 const socket = new WebSocket( "ws://localhost:8080" );
 
@@ -108,7 +109,7 @@ function App() {
     }, [] );
     
     return (
-        <div className="flex flex-col h-screen rounded-md bg-slate-700">
+        <div className="flex flex-col h-screen rounded-md bg-white">
             
             {window.Main && (
                 <div className="flex-none">
@@ -116,25 +117,10 @@ function App() {
                 </div>
             )}
 
-            <div className="flex flex-col space-y-4 items-center ">
-                <div className="flex space-x-3">
-                    <h1 className="text-xl text-gray-50">💝 Welcome 💝, now send a message to the Main 📩📩</h1>
-                    <button
-                        onClick={sendMessageToElectron}
-                        className=" bg-green-400 rounded px-4 py-0 focus:outline-none hover:bg-green-300"
-                    >
-                Send
-                    </button>
-                </div>
-                {isSent && (
-                    <div>
-                        <h4 className=" text-green-500">Message sent!!</h4>
-                    </div>
-                )}
-                <div>
-                    {" "}
-                    <h4 className=" text-yellow-200">{fromThumbs}</h4>
-                </div>
+            
+            <div className="flex h-screen">
+                <NavBar />
+               
             </div>
         </div>
     );

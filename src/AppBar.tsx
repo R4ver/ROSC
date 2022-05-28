@@ -16,10 +16,10 @@ function AppBar() {
 
     return (
         <>
-            <div className="py-0.5 flex justify-between draggable bg-slate-900 text-white rounded-t-md">
+            <div className="py-0.5 flex justify-between draggable bg-white text-textColor rounded-t-md">
                 <div className="inline-flex">
-                    <img className="h-6 lg:-ml-2" src={Icon} alt="Icon of Electron" />
-                    <p className="text-xs md:pt-1 md:-ml-1 lg:-ml-2">Vite App</p>
+                    {/* <img className="h-6 lg:-ml-2" src={Icon} alt="Icon of Electron" />
+                    <p className="text-xs md:pt-1 md:-ml-1 lg:-ml-2">Vite App</p> */}
                 </div>
                 <div className="inline-flex -mt-1">
                     <button onClick={window.Main.Minimize} className="undraggable md:px-4 lg:px-3 pt-1 hover:bg-gray-300">

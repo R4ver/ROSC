@@ -8,7 +8,7 @@ import isDev from "electron-is-dev";
 
 // Handlers
 import MessageHandler from "./message-handler";
-import SpawnModule from "./module-spawner";
+// import SpawnModule from "./module-spawner";
 import { WebSocketClient } from "vite";
 
 const height = 600;
@@ -52,7 +52,7 @@ function createWindow() {
     } );
     ipcMain.on( "maximize", () => {
     // eslint-disable-next-line no-unused-expressions
-        window.isMaximized() ? window.restore() : window.maximize();
+        window.isMaximized() ? window.unmaximize() : window.maximize();
     } );
 
     ipcMain.on( "close", () => {
@@ -95,6 +95,14 @@ ipcMain.on( "message", ( event: IpcMainEvent, message: any ) => {
 
 const wss = new WebSocketServer( { port: 8080 } );
 
+/**
+ * TODO:
+ * Decouple the state from the main file (this one)
+ * and instead use something like node-persist to simple store a JSON object which
+ * can be read from.
+ * 
+ * Also figure out if store updates get parsed through WS or IPC.
+ */
 type TState = {
     frontend: null | WebSocketClient,
     modules: object,
@@ -115,8 +123,6 @@ wss.on( "connection", ( ws ) => {
             state = {
                 ...newState
             };
-
-            
         } );
     } );
 } );
@@ -129,16 +135,27 @@ wss.on( "listening", () => {
         isListening: true
     };
 
-    spawnActiveModules();
+    // spawnActiveModules();
 } );
 
-const spawnActiveModules = () => {
+/**
+ * TODO: 
+ * Setup a flow of grabbing currently active modules and start them on launch.
+ */
+// const spawnActiveModules = () => {
 
-    SpawnModule( "thumbparameters", true );
+
+
+//     // SpawnModule( "thumbparameters", true );
     
-    // SpawnModule( null, false, "../testclient.js" );
-};
+//     // SpawnModule( null, false, "../testclient.js" );
+// };
 
+
+/**
+ * TODO:
+ * Move these two functions into a helper file.
+ */
 function isJsonString( str: string ) {
     try {
         JSON.parse( str );

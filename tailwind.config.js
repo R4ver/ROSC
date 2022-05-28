@@ -1,16 +1,19 @@
 /* eslint-disable */
 const colors = {
-    offWhite: "#f5f7fb",
-    white: "#fff",
-    black: "#0C0F13",
-    red: "#f7193e",
+    pureWhite: "#FFF",
+    pureBlack: "#000",
+    white: "#FBFBFB",
+    black: "#1C1E21",
+    blackHighlight: "#9295A0",
+    blackDarker: "#0D0E11",
+    red: "#F7193E",
 };
 
 module.exports = {
-    purge: [
-        "./src/**/*.{js,jsx,ts,tsx}"
-    ],
     darkMode: "class",
+    content: [
+        './src/**/*.{html,js,tsx,jsx}',
+    ],
     theme: {
         container: {
             center: true,
