@@ -7,11 +7,11 @@ const NavBar = () => (
         </div>  
 
         <nav className="flex flex-col items-center place-content-center flex-grow">
-            {[1,2,3,4].map(i => (
+            {[1,2,3,4].map( i => (
                 <a key={i} href="#">
                     [B]
                 </a>
-            ))}
+            ) )}
         </nav> 
 
         <div className="flex-shrink pb-4">

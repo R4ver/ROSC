@@ -9,15 +9,19 @@ import ModuleUI from "../modules/com.r4ver.testmodule/module.ui.mdx";
 
 type TModule = {
     id: string,
-    props: object
+    version: string,
+    name: string,
+    title: string,
+    description: string,
+    icons: string,
+    props: {
+        [key: string]: any
+    }
 }
 
 type TState = {
     modules: {
-        [key: string]: {
-            id: string,
-            props: object
-        }
+        [key: string]: TModule
     }
 }
 
@@ -29,7 +33,6 @@ type TState = {
 // };
 
 function MessageHandler( state: TState, { type, payload }: {type: string, payload: any}, callback: ( state: TState, updatedID: string ) => void ) {
-    console.log( type, payload );
     let updatedID;
     switch ( type ) {
     case "configs":
@@ -40,30 +43,31 @@ function MessageHandler( state: TState, { type, payload }: {type: string, payloa
                 ...payload
             }
         };
-        console.log( state );
         break;
-    case "update":
+    case "update": {
         state = {
             ...state,
             modules: {
                 ...state.modules,
-                [payload.id]: {
+                [payload.id]: { 
                     ...state.modules[payload.id],
                     props: {
-                        ...payload
+                        ...state.modules[payload.id]?.props,
+                        ...payload.props
                     }
                 }
             }
         };
+
+        console.log( state );
         updatedID = payload.id;
         break;
+    }
 
     default:
         console.log( "Message not handled by type: ", { state, type, ...payload } );
         break;
     }
-
-    console.log( state, updatedID );
 
     callback( state, updatedID );
 }
@@ -110,13 +114,7 @@ function App() {
         socket.addEventListener( "message", function ( event ) {
             const message = FormatMessage( event.data );
             MessageHandler( state, message, ( newState, updatedID ) => {
-                console.log( newState );
                 setState( prev => {
-                    console.log( {
-                        ...prev,
-                        ...newState
-                    } );
-
                     return {
                         ...prev,
                         ...newState
@@ -125,7 +123,7 @@ function App() {
             } );
     
         } );
-    }, [] );
+    }, [state] );
     
     const components = {
         em: ( props: any ) => <i {...props} />,
@@ -133,6 +131,7 @@ function App() {
     };
 
     console.log( state );
+
     return (
         <div className="flex flex-col h-screen rounded-md bg-white">
             
@@ -145,11 +144,15 @@ function App() {
             
             <div className="flex h-screen">
                 <NavBar />
-                <div className="ml-5 prose">
+                <div className="ml-5 prose p-5">
                     {state.modules["rosc.module.testmodule"] && state.modules["rosc.module.testmodule"].props &&
-                        <MDXProvider components={components}>
-                            <ModuleUI {...state.modules["rosc.module.testmodule"].props}/>
-                        </MDXProvider>
+                        <>
+                            <h1 className="mb-3 text-2xl">{state.modules["rosc.module.testmodule"].title}<input type="checkbox" className="ml-2"/></h1>
+                            <p className="m-0 mb-5">{state.modules["rosc.module.testmodule"].description}</p>
+                            <MDXProvider components={components}>
+                                <ModuleUI {...state.modules["rosc.module.testmodule"].props}/>
+                            </MDXProvider>
+                        </>
                     }
                 </div>
             </div>

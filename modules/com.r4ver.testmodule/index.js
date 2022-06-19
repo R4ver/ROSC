@@ -34,6 +34,8 @@ const SendUpdate = ( payload ) => JSON.stringify( {
     type: "update",
     payload: {
         id: "rosc.module.testmodule",
-        ...payload
+        props: {
+            ...payload
+        }
     }
 } );
