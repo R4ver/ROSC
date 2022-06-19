@@ -2,7 +2,7 @@
     "name": "rosc",
     "version": "0.1.0",
     "license": "MIT",
-    "main": "main/index.js",
+    "main": "main/app.js",
     "author": "R4ver",
     "description": "A bundle of cool things for VRChat, mainly using OSC to enhance the creativity of avatars.",
     "keywords": [
@@ -16,11 +16,12 @@
     },
     "productName": "rosc",
     "scripts": {
-        "dev": "concurrently \"yarn dev:vite\" \" yarn dev:electron\"",
+        "dev": "set NODE_ENV=development&& concurrently \"yarn dev:vite\" \" yarn dev:electron\"",
         "dev:vite": "vite",
         "dev:electron": "npm run build:electron && electron .",
+        "copy-modules": "node -r esm scripts/copy-modules.js",
         "run:module": "bash -c 'echo \"[Module] ${1}\"; node ./modules/${1}/index.js' --",
-        "build": "npm run build:vite && npm run build:electron",
+        "build": "yarn run build:vite && yarn run build:electron",
         "build:vite": "vite build",
         "build:electron": "tsc -p electron",
         "dist": "npm run build && electron-builder",
@@ -29,20 +30,28 @@
         "type-check": "tsc",
         "lint": "eslint . --ext js,jsx,ts,tsx",
         "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix",
-        "build:sharp": "cd modules/thumbparameters && dotnet publish -r win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --output \"../release\""
+        "build:sharp": "bash -c 'echo \"[Building Module]: ${1}\"; cd src-modules/${1}; dotnet publish -r win-x64 //p:PublishSingleFile=true //p:IncludeNativeLibrariesForSelfExtract=true --output \"../../modules/${1}\"; cp package.json module.ui.mdx ../../modules/${1}' --"
     },
     "dependencies": {
+        "@mdx-js/mdx": "^2.0.0-rc.2",
+        "@mdx-js/react": "^2.1.1",
+        "@mdx-js/rollup": "^2.1.1",
         "@vitejs/plugin-react": "^1.2.0",
         "electron-is-dev": "^2.0.0",
         "fft-js": "^0.0.12",
+        "fs-extra": "^10.1.0",
+        "install": "^0.13.0",
         "naudiodon": "^2.3.6",
+        "npm": "^8.12.1",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
         "react-icons": "^4.3.1",
         "vite": "^2.8.6",
+        "vite-plugin-mdx": "^3.5.10",
         "ws": "^8.5.0"
     },
     "devDependencies": {
+        "@tailwindcss/typography": "^0.5.2",
         "@types/node": "^17.0.22",
         "@types/react": "^18.0.9",
         "@types/react-dom": "^18.0.5",
@@ -73,7 +82,10 @@
             "src/out"
         ],
         "directories": {
-            "buildResources": "resources"
-        }
+            "buildResources": "modules"
+        },
+        "extraFiles": [
+            "modules/release"
+        ]
     }
 }

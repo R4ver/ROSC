@@ -1,32 +1,57 @@
 import React, { useEffect, useState } from "react";
 import AppBar from "./AppBar";
 import NavBar from "./NavBar";
+import { MDXProvider } from "@mdx-js/react";
 
 const socket = new WebSocket( "ws://localhost:8080" );
 
+import ModuleUI from "../modules/com.r4ver.testmodule/module.ui.mdx";
+
+type TModule = {
+    id: string,
+    props: object
+}
+
 type TState = {
     modules: {
-        [key: string]: object
+        [key: string]: {
+            id: string,
+            props: object
+        }
     }
 }
 
 
-let state: TState = {
-    modules: {
+// const state: TState = {
+//     modules: {
         
-    }
-};
+//     }
+// };
 
 function MessageHandler( state: TState, { type, payload }: {type: string, payload: any}, callback: ( state: TState, updatedID: string ) => void ) {
+    console.log( type, payload );
     let updatedID;
     switch ( type ) {
+    case "configs":
+        state = {
+            ...state,
+            modules: {
+                ...state.modules,
+                ...payload
+            }
+        };
+        console.log( state );
+        break;
     case "update":
         state = {
             ...state,
             modules: {
                 ...state.modules,
                 [payload.id]: {
-                    ...payload
+                    ...state.modules[payload.id],
+                    props: {
+                        ...payload
+                    }
                 }
             }
         };
@@ -37,6 +62,8 @@ function MessageHandler( state: TState, { type, payload }: {type: string, payloa
         console.log( "Message not handled by type: ", { state, type, ...payload } );
         break;
     }
+
+    console.log( state, updatedID );
 
     callback( state, updatedID );
 }
@@ -60,26 +87,11 @@ function FormatMessage( message: string ) {
 }
 
 function App() {
-    const [isSent, setSent] = useState( false );
-    const [fromMain, setFromMain] = useState<string | null>( null );
-    const [fromThumbs, setFromThumbs] = useState<string | object | null>( null );
-
-    const sendMessageToElectron = () => {
-        if ( window.Main ) {
-            window.Main.sendMessage( "Hello I'm from React World" );
-        } else {
-            setFromMain( "You are in a Browser, so no Electron functions are available" );
+    const [state, setState] = useState<TState>( {
+        modules: {
+            
         }
-        setSent( true );
-    };
-    
-    useEffect( () => { 
-        if ( isSent && window.Main ) {
-            window.Main.on( "message", ( message: string ) => {
-                setFromMain( message );
-            } );
-        }
-    }, [fromMain, isSent] );
+    } );
 
     useEffect( () => {
         // Connection opened
@@ -98,16 +110,29 @@ function App() {
         socket.addEventListener( "message", function ( event ) {
             const message = FormatMessage( event.data );
             MessageHandler( state, message, ( newState, updatedID ) => {
-                state = {
-                    ...newState
-                };
+                console.log( newState );
+                setState( prev => {
+                    console.log( {
+                        ...prev,
+                        ...newState
+                    } );
 
-                console.log( state );
+                    return {
+                        ...prev,
+                        ...newState
+                    };
+                } );
             } );
     
         } );
     }, [] );
     
+    const components = {
+        em: ( props: any ) => <i {...props} />,
+        Hello: ( props: any ) => <span className="text-brand">Some cool number: 10</span>
+    };
+
+    console.log( state );
     return (
         <div className="flex flex-col h-screen rounded-md bg-white">
             
@@ -120,7 +145,13 @@ function App() {
             
             <div className="flex h-screen">
                 <NavBar />
-               
+                <div className="ml-5 prose">
+                    {state.modules["rosc.module.testmodule"] && state.modules["rosc.module.testmodule"].props &&
+                        <MDXProvider components={components}>
+                            <ModuleUI {...state.modules["rosc.module.testmodule"].props}/>
+                        </MDXProvider>
+                    }
+                </div>
             </div>
         </div>
     );

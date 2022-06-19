@@ -1,0 +1,13 @@
+{
+    "id": "rosc.module.thumbparameters",
+    "title": "Thumb Parameters",
+    "name": "thumb-parameters",
+    "description": "Get extra parameters to play around with on your 3.0 Avatar based on your thumb position! Index and Quest controllers supported.",
+    "icon": "Bs/BsHandThumbsUpFill",
+    "values": {
+        "leftThumb": 0,
+        "rightThumb": 0,
+        "isIndex": false,
+        "connectedToOVR": false
+    }
+}

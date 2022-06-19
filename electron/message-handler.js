@@ -1,7 +1,7 @@
 var isModule = ( id ) => /rosc\.module\.(.+)/g.exec( id );
 
 export default function MessageHandler( state, { type, payload }, ws, callback ) {
-    console.log( { type, payload } );
+    let event = { event: null, data: null };
 
     switch ( type ) {
     case "identifier":
@@ -14,7 +14,7 @@ export default function MessageHandler( state, { type, payload }, ws, callback )
                 modules: {
                     ...state.modules,
                     [payload.id]: {
-                        id: payload.id,
+                        ...[payload.id],
                         ws
                     }
                 }
@@ -26,6 +26,7 @@ export default function MessageHandler( state, { type, payload }, ws, callback )
                 ...state,
                 frontend: ws
             };
+            event = { event: "frontend", data: null };
         }
         break;
 
@@ -39,10 +40,10 @@ export default function MessageHandler( state, { type, payload }, ws, callback )
         break;
     }
 
-    callback( state );
+    callback( state, event );
 }
 
 const SendUpdate = ( payload ) => JSON.stringify( {
     type: "update",
-    payload
+    payload: payload
 } );

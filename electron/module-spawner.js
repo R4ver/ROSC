@@ -43,3 +43,5 @@ export default function SpawnModule( module, isExecuteable = false, customPath =
 
     return child;
 }
+
+//dotnet publish -r win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --output \"../release/${1}\"

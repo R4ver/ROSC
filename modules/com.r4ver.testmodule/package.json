@@ -1,0 +1,12 @@
+{
+    "version": "1.0.0",
+    "name": "rosc-test-module",
+    "id": "rosc.module.testmodule",
+    "main": "index.js",
+    "title": "Test Module",
+    "description": "Simple module for testing",
+    "icon": "Bs/BsHandThumbsUpFill",
+    "props": {
+        "username": ""
+    }
+}
