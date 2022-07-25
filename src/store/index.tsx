@@ -1,22 +1,13 @@
-import { useState, useContext, createContext, FC } from "react";
+import { useContext, createContext, useReducer, Dispatch } from "react";
+import { ModuleReducer, TActionPayload, TModules } from "./reducers";
 
-type TModule = {
-    id: string,
-    version: string,
-    name: string,
-    title: string,
-    description: string,
-    icons: string,
-    props: {
-        [key: string]: any
-    }
-}
-
-type TModules = {
-    [key: string]: TModule
-}
-
-const moduleContext = createContext<TModules>( { } );
+const moduleContext = createContext<{
+    state: TModules,
+    dispatch: Dispatch<any>
+}>( {
+    state: {},
+    dispatch: () => null
+} );
 const ModuleProvider = moduleContext.Provider; 
 const appContext = createContext( {} );
 
@@ -24,14 +15,12 @@ type Props = {
     children: JSX.Element
 }
 
-export const StoreProvider = ( { children }: Props ) => {
-    // const [state, dispatch] = 
+export const ModuleStoreProvider = ( { children }: Props ) => {
+    const [state, dispatch] = useReducer( ModuleReducer, {} );
 
-    return children;
-
-    // return <ModuleProvider>
-    //     {children}
-    // </ModuleProvider>;
+    return <ModuleProvider value={{ state, dispatch }}>
+        {children}
+    </ModuleProvider>;
 };
 
 export const useModuleStore = () => useContext( moduleContext );

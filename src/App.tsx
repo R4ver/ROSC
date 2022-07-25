@@ -7,6 +7,9 @@ const socket = new WebSocket( "ws://localhost:8080" );
 
 import ModuleUI from "../modules/com.r4ver.testmodule/module.ui.mdx";
 
+import { useModuleStore } from "./store";
+import { INIT_MODULES, UPDATE_MODULE } from "./store/actions/modules";
+
 type TModule = {
     id: string,
     version: string,
@@ -32,35 +35,13 @@ type TState = {
 //     }
 // };
 
-function MessageHandler( state: TState, { type, payload }: {type: string, payload: any}, callback: ( state: TState, updatedID: string ) => void ) {
-    let updatedID;
+function MessageHandler( state: any, { type, payload }: {type: string, payload: any}, dispatch: any ) {
     switch ( type ) {
     case "configs":
-        state = {
-            ...state,
-            modules: {
-                ...state.modules,
-                ...payload
-            }
-        };
+        dispatch( INIT_MODULES( payload ) );
         break;
     case "update": {
-        state = {
-            ...state,
-            modules: {
-                ...state.modules,
-                [payload.id]: { 
-                    ...state.modules[payload.id],
-                    props: {
-                        ...state.modules[payload.id]?.props,
-                        ...payload.props
-                    }
-                }
-            }
-        };
-
-        console.log( state );
-        updatedID = payload.id;
+        dispatch( UPDATE_MODULE( payload ) );
         break;
     }
 
@@ -68,8 +49,6 @@ function MessageHandler( state: TState, { type, payload }: {type: string, payloa
         console.log( "Message not handled by type: ", { state, type, ...payload } );
         break;
     }
-
-    callback( state, updatedID );
 }
 
 function isJsonString( str: string ) {
@@ -91,11 +70,7 @@ function FormatMessage( message: string ) {
 }
 
 function App() {
-    const [state, setState] = useState<TState>( {
-        modules: {
-            
-        }
-    } );
+    const { state, dispatch } = useModuleStore();
 
     useEffect( () => {
         // Connection opened
@@ -113,15 +88,19 @@ function App() {
         // Listen for messages
         socket.addEventListener( "message", function ( event ) {
             const message = FormatMessage( event.data );
-            MessageHandler( state, message, ( newState, updatedID ) => {
-                setState( prev => {
-                    return {
-                        ...prev,
-                        ...newState
-                    };
-                } );
-            } );
+            // MessageHandler( state, message, dispatch );
+
+            switch ( message.type ) {
+            case "configs":
+                dispatch( INIT_MODULES( message.payload ) );
+                break;
+            case "update":
+                dispatch( UPDATE_MODULE( message.payload ) );
+                break;
+            default:
+                break;
     
+            }
         } );
     }, [state] );
     
@@ -130,7 +109,7 @@ function App() {
         Hello: ( props: any ) => <span className="text-brand">Some cool number: 10</span>
     };
 
-    console.log( state );
+    console.log( "Current State: ", state );
 
     return (
         <div className="flex flex-col h-screen rounded-md bg-white">
@@ -145,12 +124,12 @@ function App() {
             <div className="flex h-screen">
                 <NavBar />
                 <div className="ml-5 prose p-5">
-                    {state.modules["rosc.module.testmodule"] && state.modules["rosc.module.testmodule"].props &&
+                    {state["rosc.module.testmodule"] && state["rosc.module.testmodule"].props &&
                         <>
-                            <h1 className="mb-3 text-2xl">{state.modules["rosc.module.testmodule"].title}<input type="checkbox" className="ml-2"/></h1>
-                            <p className="m-0 mb-5">{state.modules["rosc.module.testmodule"].description}</p>
+                            <h1 className="mb-3 text-2xl">{state["rosc.module.testmodule"].title}<input type="checkbox" className="ml-2"/></h1>
+                            <p className="m-0 mb-5">{state["rosc.module.testmodule"].description}</p>
                             <MDXProvider components={components}>
-                                <ModuleUI {...state.modules["rosc.module.testmodule"].props}/>
+                                <ModuleUI {...state["rosc.module.testmodule"].props}/>
                             </MDXProvider>
                         </>
                     }

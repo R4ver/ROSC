@@ -1,12 +1,21 @@
 import { createReducer } from "./index";
 
-const initModules = ( state: any, { payload }: {payload: any} ) => {
-    console.log( state, payload );
-    return state;
-};
+const initModules = ( state: any, { payload }: {payload: any} ) => ( {
+    ...state,
+    ...payload
+} );
 
-const moduleReducer = createReducer( {}, {
-    INIT_MODULES: initModules
+const updateModule = ( state: any, { payload }: {payload: any} ) => ( {
+    ...state,
+    [payload.id]: {
+        ...state[payload.id],
+        props: { ...payload.props }
+    }
+} );
+
+const moduleReducer = createReducer( { test: "hello" }, {
+    INIT_MODULES: initModules,
+    UPDATE_MODULE: updateModule
 } );
 
 export default moduleReducer;
