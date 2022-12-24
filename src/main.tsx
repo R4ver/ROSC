@@ -1,6 +1,7 @@
+import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+import { HashRouter } from "react-router-dom";
 
 import { ModuleStoreProvider } from "./store";
 import App from "./App";
@@ -11,7 +12,9 @@ const root = ReactDOM.createRoot( container as HTMLElement );
 root.render(
     <React.StrictMode>
         <ModuleStoreProvider>
-            <App />
+            <HashRouter>
+                <App />
+            </HashRouter>
         </ModuleStoreProvider>
     </React.StrictMode>
 );

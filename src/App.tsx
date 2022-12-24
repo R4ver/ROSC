@@ -1,143 +1,73 @@
-import React, { useEffect, useState } from "react";
+import type { TModule } from "./store/reducers";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+
 import AppBar from "./AppBar";
 import NavBar from "./NavBar";
-import { MDXProvider } from "@mdx-js/react";
-
-const socket = new WebSocket( "ws://localhost:8080" );
-
-import ModuleUI from "../modules/com.r4ver.testmodule/module.ui.mdx";
+import Page from "./components/page";
+import { SocketStoreProvider } from "./store";
 
 import { useModuleStore } from "./store";
-import { INIT_MODULES, UPDATE_MODULE } from "./store/actions/modules";
-
-type TModule = {
-    id: string,
-    version: string,
-    name: string,
-    title: string,
-    description: string,
-    icons: string,
-    props: {
-        [key: string]: any
-    }
-}
-
-type TState = {
-    modules: {
-        [key: string]: TModule
-    }
-}
-
-
-// const state: TState = {
-//     modules: {
-        
-//     }
-// };
-
-function MessageHandler( state: any, { type, payload }: {type: string, payload: any}, dispatch: any ) {
-    switch ( type ) {
-    case "configs":
-        dispatch( INIT_MODULES( payload ) );
-        break;
-    case "update": {
-        dispatch( UPDATE_MODULE( payload ) );
-        break;
-    }
-
-    default:
-        console.log( "Message not handled by type: ", { state, type, ...payload } );
-        break;
-    }
-}
-
-function isJsonString( str: string ) {
-    try {
-        JSON.parse( str );
-    } catch ( e ) {
-        return false;
-    }
-    return true;
-}
-
-function FormatMessage( message: string ) {
-    message = message.toString();
-    if ( isJsonString( message ) ) {
-        return JSON.parse( message );
-    }
-
-    return message;
-}
+import { INIT_MODULES } from "./store/actions/modules";
 
 function App() {
     const { state, dispatch } = useModuleStore();
 
     useEffect( () => {
-        // Connection opened
-        socket.addEventListener( "open", function () {
-            const identifier = {
-                type: "identifier",
-                payload: {
-                    id: "rosc.frontend"
-                }
-            };
-            console.log( "Connection Open" );
-            socket.send( JSON.stringify( identifier ) );
-        } );
+        let ignore = false;
+        window.Main.getModuleConfigs();
 
-        // Listen for messages
-        socket.addEventListener( "message", function ( event ) {
-            const message = FormatMessage( event.data );
-            // MessageHandler( state, message, dispatch );
+        const dispatchData = ( data: Record<string, any> ) => {
+            if ( ignore ) return;
+            dispatch( INIT_MODULES( data ) );
 
-            switch ( message.type ) {
-            case "configs":
-                dispatch( INIT_MODULES( message.payload ) );
-                break;
-            case "update":
-                dispatch( UPDATE_MODULE( message.payload ) );
-                break;
-            default:
-                break;
-    
-            }
-        } );
-    }, [state] );
-    
-    const components = {
-        em: ( props: any ) => <i {...props} />,
-        Hello: ( props: any ) => <span className="text-brand">Some cool number: 10</span>
-    };
+            SpawnActiveModules( data );
+        };
+        window.Main.once( "module-configs", dispatchData ); 
 
-    console.log( "Current State: ", state );
+        return () => {
+            ignore = true;
+            window.Main.removeListener( "module-configs", dispatchData );
+        };
+    }, [] );
+
+    const Home = () => <h1>Hello world</h1>;
 
     return (
-        <div className="flex flex-col h-screen rounded-md bg-white">
+        <div className="app-grid h-screen bg-black select-none">
             
             {window.Main && (
-                <div className="flex-none">
-                    <AppBar />
-                </div>
+                <AppBar />
             )}
 
-            
-            <div className="flex h-screen">
+            <>
                 <NavBar />
-                <div className="ml-5 prose p-5">
-                    {state["rosc.module.testmodule"] && state["rosc.module.testmodule"].props &&
-                        <>
-                            <h1 className="mb-3 text-2xl">{state["rosc.module.testmodule"].title}<input type="checkbox" className="ml-2"/></h1>
-                            <p className="m-0 mb-5">{state["rosc.module.testmodule"].description}</p>
-                            <MDXProvider components={components}>
-                                <ModuleUI {...state["rosc.module.testmodule"].props}/>
-                            </MDXProvider>
-                        </>
-                    }
+                <div className="app-content">
+                    <SocketStoreProvider>
+                        <Routes>
+                            <Route path="*" element={<Navigate to="/" replace={true} />} />
+                            <Route path="/" index element={<Home />} />
+                            {Object.keys( state ).map( ( item: string ) => {
+                                const module = state[item] as TModule;
+                                return <Route key={module.id} path={module.id} element={<Page module={module} />} />;
+                            } ) }
+                        </Routes>
+                    </SocketStoreProvider>
                 </div>
-            </div>
+            </>
         </div>
     );
 }
                     
 export default App;
-                    
+
+const SpawnActiveModules = ( data: Record<string, any> ) => {
+    const activeModules = JSON.parse( localStorage.getItem( "active-modules" ) || "{}" );
+    const filtered = Object.values( data ).map( ( config: any ) => {
+        const isActive = !!Object.keys( activeModules ).find( e => config.id === e && activeModules[e] );
+                
+        return isActive ? config : null;
+    } ).filter( e => e );
+
+    window.Main.spawnModule( filtered );
+};

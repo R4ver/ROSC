@@ -16,7 +16,7 @@ function AppBar() {
 
     return (
         <>
-            <div className="py-0.5 flex justify-end draggable bg-white text-textColor rounded-t-md">
+            <div className="app-bar flex justify-end draggable bg-black text-blackHighlight rounded-t-md">
                 <div className="inline-flex -mt-1">
                     <button onClick={window.Main.Minimize} className="undraggable md:px-4 lg:px-3 pt-1 hover:bg-gray-300">
                         &#8211;

@@ -1,17 +1,19 @@
 import moduleReducer from "./modules";
+import socketMessagesReducer from "./socketMessages";
 
 type TProps = {
     [key: string]: any
 }
 
-type TModule = {
+export type TModule = {
     id: string,
     version: string,
     name: string,
     title: string,
     description: string,
     icons: string,
-    props: TProps
+    props: TProps,
+    modulePath: string,
 }
 
 export type TModules = {
@@ -47,6 +49,7 @@ type THandlers = {
 }
 
 export const ModuleReducer = combineReducers( moduleReducer );
+export const SocketMessagesReducer = combineReducers( socketMessagesReducer );
 
 /**
  * 
@@ -56,7 +59,7 @@ export const ModuleReducer = combineReducers( moduleReducer );
 export function combineReducers( reducerDict: TReducerDict ) {
     const _initialState: any = getInitialState( reducerDict );
     return function ( state = _initialState, action: TAction ) {
-        if ( !Object.keys( reducerDict ).length ) {
+        if ( typeof reducerDict === "function" ) {
             return reducerDict( state, action );
         }
 

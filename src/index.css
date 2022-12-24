@@ -11,4 +11,26 @@
 
 .undraggable {
     -webkit-app-region: no-drag;
-  }
+}
+
+.app-grid {
+    display: grid;
+    grid-template-columns: 20px 240px auto 20px;
+    grid-template-rows: 28px auto 24px;
+    grid-template-areas: 
+    "appbar appbar appbar appbar"
+    ". sidenav main ."
+    ". footer footer .";
+}
+
+.app-nav-bar {
+    grid-area: sidenav;
+}
+
+.app-content {
+    grid-area: main;
+}
+
+.app-bar {
+    grid-area: appbar;
+}

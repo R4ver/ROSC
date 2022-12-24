@@ -1,6 +1,10 @@
 import { app } from "electron";
 import { join } from "path";
-import {  readdirSync, stat, readFileSync, existsSync } from "fs-extra";
+import {  readdir, stat, readFile } from "fs-extra";
+// const supportedExtensions = [
+//     "exe",
+//     "js"
+// ];
 
 class ModuleRepository {
 
@@ -15,12 +19,12 @@ class ModuleRepository {
         const appPath = app.getAppPath();
         const userDataPath = app.getPath( "userData" );
 
-        const paths = [
-            join( userDataPath, "./modules" ),
-        ];
+        const paths = [];
 
         if ( process.env.NODE_ENV === "development" ) {
             paths.push( join( appPath, "./modules" ) );
+        } else {
+            paths.push( join( userDataPath, "./modules" ), );
         }
 
         return paths;
@@ -28,24 +32,38 @@ class ModuleRepository {
 
     async loadModuleConfigs() {
         let configs: any = {};
-        const paths = this.modulePaths.filter( e => existsSync( e ) !== false );
+        const paths = this.modulePaths.filter( async e => {
+            try {
+                const exists = await stat( e );
 
-        console.log( paths );
+                if ( exists ) 
+                    return true;
+                
+            } catch ( error ) {
+                return false;
+            }
+        } );
 
         for ( const path of paths ) {
-            console.log( path );
-            const plugins = readdirSync( path );
+            try {
+                const plugins = await readdir( path );
 
-            for ( const plugin of plugins ) {
-                const config = await this.getModuleConfig( plugin, path );
-                configs = {
-                    ...configs,
-                    [config.id]: config
-                };
+                if ( !plugins ) continue;
+    
+                for ( const plugin of plugins ) {
+                    const config = await this.getModuleConfig( plugin, path );
+    
+                    configs = {
+                        ...configs,
+                        [config.id]: config
+                    };
+                }
+            } catch ( error ) {
+                //
             }
-        }
 
-        console.log( configs );
+            
+        }
 
         return configs;
     }
@@ -67,10 +85,19 @@ class ModuleRepository {
             return;
         }
 
-        let moduleConfig = JSON.parse( readFileSync( modulePathPackageJson ).toString() );
+        let moduleConfig = JSON.parse( await ( await readFile( modulePathPackageJson ) ).toString() );
+        const match = modulePath.match( /([^/|\\\\]+$)/ );
+        
+        if ( !match ) {
+            throw new Error( "Couldn't get folder name" );
+        }
+
+        const id = match[1];
+
         moduleConfig = {
+            ...moduleConfig,
             modulePath,
-            ...moduleConfig
+            id
         };
     
         return moduleConfig;

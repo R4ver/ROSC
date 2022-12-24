@@ -1,47 +1,73 @@
 import { resolve } from "path";
+import { stat } from "fs/promises";
 import { spawn } from "child_process";
+import isDev from "electron-is-dev";
 
-export default function SpawnModule( module, isExecuteable = false, customPath = null ) {
-    let child;
+const supportedExtensions = [
+    "exe",
+    "node"
+];
 
-    console.log( { module, isExecuteable, customPath } );
-
-    switch ( isExecuteable ) {
-    case true:
-        child = spawn( resolve( __dirname, `../modules/release/${module}.exe` ) );
-        break;
-
-    default:
-        console.log( resolve( __dirname, `${customPath ? customPath : `../modules/release/${module}.js`}` ) );
-        child = spawn( "node", ["-r", "esm", `${resolve( __dirname, `${customPath ? customPath : `../modules/release/${module}.js`}` )}`] );
-        break;
+const canSpawn = ( moduleType ) => {
+    if ( !moduleType || !supportedExtensions.find( e => e !== moduleType ) ) {
+        console.log( "Module type not supported: ", moduleType );
+        return false;
     }
 
-    child.stdout.setEncoding( "utf8" );
-    child.stdout.on( "data", function ( data ) {
-        //Here is where the output goes
+    return true;
+};
 
-        console.log( "stdout: " + data );
+export default async function SpawnModule( { modulePath, moduleType } ) {
 
-        data = data.toString();
-    } );
+    if ( !canSpawn( moduleType ) ) return;
 
-    child.stderr.setEncoding( "utf8" );
-    child.stderr.on( "data", function ( data ) {
-        //Here is where the error output goes
+    let child;
 
-        console.log( "stderr: " + data );
+    console.log( { moduleType, modulePath } );
 
-        data = data.toString();
-    } );
+    switch ( moduleType ) {
+        case "exe":
+            child = spawn( resolve( __dirname, `${modulePath}/module.exe` ) );
+            break;
 
-    child.on( "close", function ( code ) {
-        //Here you can get the exit code of the script
+        case "node":
+            child = spawn(
+                "node",
+                [`${resolve( __dirname, `${modulePath}/module.js` )}`]
+            );
+            break;
 
-        console.log( "closing code: " + code );
-    } );
+        default:
+            break;
+    }
+
+    if ( child && child.stdout ) {
+        child.stdout.setEncoding( "utf8" );
+        child.stdout.on( "data", function ( data ) {
+            //Here is where the output goes
+
+            console.log( "stdout: " + data );
+
+            data = data.toString();
+        } );
+
+        child.stderr.setEncoding( "utf8" );
+        child.stderr.on( "data", function ( data ) {
+            //Here is where the error output goes
+
+            console.log( "stderr: " + data );
+
+            data = data.toString();
+        } );
+
+        child.on( "close", function ( code ) {
+            //Here you can get the exit code of the script
+
+            console.log( "closing code: " + code );
+        } );
+    }
 
     return child;
 }
 
-//dotnet publish -r win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --output \"../release/${1}\"
+//dotnet publish -r win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --output \"../release/${1}\";

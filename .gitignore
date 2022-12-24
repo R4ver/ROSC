@@ -555,3 +555,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Current Module files since I don't want them added anymore to this repo
+modules/
+src-modules/

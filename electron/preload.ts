@@ -35,11 +35,20 @@ const api = {
    */
     on: ( channel: string, callback: ( data: any ) => void ) => {
         ipcRenderer.on( channel, ( _, data ) => callback( data ) );
-    }
+    },
+    once: ( channel: string, callback: ( data: any ) => void ) => {
+        ipcRenderer.once( channel, ( _, data ) => callback( data ) );
+    },
+    removeListener: ( channel: string, callback: any ) => {
+        ipcRenderer.removeListener( channel, callback );
+    },
+    getModuleConfigs: () => {
+        ipcRenderer.send( "module-configs" );
+    },
+    getModuleUI: ( id: string ) => {
+        ipcRenderer.send( "get-module-ui", id );
+    },
+    spawnModule: ( data: Record<string, any>[] | Record<string, any> ) => ipcRenderer.send( "spawn-module", data ),
+    killModule: ( id: string ) => ipcRenderer.send( "kill-module", id )
 };
 contextBridge.exposeInMainWorld( "Main", api );
-/**
- * Using the ipcRenderer directly in the browser through the contextBridge ist not really secure.
- * I advise using the Main/api way !!
- */
-contextBridge.exposeInMainWorld( "ipcRenderer", ipcRenderer );

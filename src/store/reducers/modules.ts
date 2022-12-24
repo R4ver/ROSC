@@ -13,7 +13,7 @@ const updateModule = ( state: any, { payload }: {payload: any} ) => ( {
     }
 } );
 
-const moduleReducer = createReducer( { test: "hello" }, {
+const moduleReducer = createReducer( {}, {
     INIT_MODULES: initModules,
     UPDATE_MODULE: updateModule
 } );

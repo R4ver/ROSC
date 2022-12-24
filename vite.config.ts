@@ -1,10 +1,8 @@
 import react from "@vitejs/plugin-react";
 import { UserConfig, ConfigEnv } from "vite";
+import pluginRewriteAll from "vite-plugin-rewrite-all";
 import { join } from "path";
-
 import { defineConfig } from "vite";
-
-
 
 const srcRoot = join( __dirname, "src" );
 
@@ -18,6 +16,8 @@ const options = {
     providerImportSource: "@mdx-js/react"
 };
 
+
+
 export default defineConfig( async ( { command }: ConfigEnv ): Promise<UserConfig> => {
     const mdx = await import( "@mdx-js/rollup" );
     // DEV
@@ -25,7 +25,7 @@ export default defineConfig( async ( { command }: ConfigEnv ): Promise<UserConfi
         return {
             root: srcRoot,
             base: "/",
-            plugins: [react(), mdx.default( options )],
+            plugins: [react(), mdx.default( options ), pluginRewriteAll()],
             resolve: {
                 alias: {
                     "/@": srcRoot
@@ -42,14 +42,14 @@ export default defineConfig( async ( { command }: ConfigEnv ): Promise<UserConfi
             optimizeDeps: {
                 exclude: ["path"],
                 include: ["react/jsx-runtime"]
-            }
+            },         
         };
     }
     // PROD
     return {
         root: srcRoot,
         base: "./",
-        plugins: [react(), mdx.default( options )],
+        plugins: [react(), mdx.default( options ), pluginRewriteAll()],
         resolve: {
             alias: {
                 "/@": srcRoot
@@ -66,6 +66,7 @@ export default defineConfig( async ( { command }: ConfigEnv ): Promise<UserConfi
         optimizeDeps: {
             exclude: ["path"],
             include: ["react/jsx-runtime"],
-        }
+        },
+        
     };
 } );
