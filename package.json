@@ -1,0 +1,78 @@
+{
+    "name": "rosc",
+    "version": "0.1.0",
+    "license": "MIT",
+    "main": "main/index.js",
+    "author": "R4ver",
+    "description": "A bundle of cool things for VRChat, mainly using OSC to enhance the creativity of avatars.",
+    "keywords": [
+        "vrchat",
+        "osc",
+        "electron",
+        "typescript"
+    ],
+    "repository": {
+        "url": "git@github.com:R4ver/ROSC.git"
+    },
+    "productName": "rosc",
+    "scripts": {
+        "dev": "concurrently \"yarn dev:vite\" \" yarn dev:electron\"",
+        "dev:vite": "vite",
+        "dev:electron": "npm run build:electron && electron .",
+        "run:module": "bash -c 'echo \"[Module] ${1}\"; node ./modules/${1}/index.js' --",
+        "build": "npm run build:vite && npm run build:electron",
+        "build:vite": "vite build",
+        "build:electron": "tsc -p electron",
+        "dist": "npm run build && electron-builder",
+        "pack": "npm run build && electron-builder --dir",
+        "clean": "rimraf dist main src/out",
+        "type-check": "tsc",
+        "lint": "eslint . --ext js,jsx,ts,tsx",
+        "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix",
+        "build:sharp": "cd modules/thumbparameters && dotnet publish -r win-x64 /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --output \"../release\""
+    },
+    "dependencies": {
+        "@vitejs/plugin-react": "^1.2.0",
+        "electron-is-dev": "^2.0.0",
+        "fft-js": "^0.0.12",
+        "naudiodon": "^2.3.6",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "vite": "^2.8.6",
+        "ws": "^8.5.0"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.22",
+        "@types/react": "^17.0.41",
+        "@types/react-dom": "^17.0.14",
+        "@types/ws": "^8.5.3",
+        "@typescript-eslint/eslint-plugin": "5.16.0",
+        "@typescript-eslint/parser": "5.16.0",
+        "autoprefixer": "^10.4.4",
+        "concurrently": "^7.0.0",
+        "electron": "^17.1.2",
+        "electron-builder": "^22.14.13",
+        "eslint": "^8.14.0",
+        "eslint-config-airbnb": "19.0.4",
+        "eslint-config-prettier": "8.5.0",
+        "eslint-plugin-import": "^2.25.4",
+        "eslint-plugin-jsx-a11y": "^6.5.1",
+        "eslint-plugin-prettier": "4.0.0",
+        "eslint-plugin-react": "^7.29.4",
+        "esm": "^3.2.25",
+        "postcss": "^8.4.12",
+        "prettier": "2.6.0",
+        "tailwindcss": "^3.0.23",
+        "typescript": "^4.6.2"
+    },
+    "build": {
+        "asar": true,
+        "files": [
+            "main",
+            "src/out"
+        ],
+        "directories": {
+            "buildResources": "resources"
+        }
+    }
+}
